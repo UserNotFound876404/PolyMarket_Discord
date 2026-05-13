@@ -7,6 +7,7 @@ class MarketController(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.model = MarketModel()
+        self.bet_data = {}
 
     @commands.command(aliases=['register', 'start'])
     async def setup(self, ctx):
