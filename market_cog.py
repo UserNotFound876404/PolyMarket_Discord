@@ -79,6 +79,11 @@ class MarketController(commands.Cog):
 
     @commands.command()
     async def startpool(self, ctx, amount: int,*, question: str):
+
+        for bets in self.bet_data.values():
+            if bets and ctx.author.id in bets:
+                return await ctx.send("❌ You already have an active bet! Please stop it before starting a new one.") 
+
         # 1. Create the UI
         if amount <= 0:
             return await ctx.send("❌ The bet amount must be greater than 0!")
