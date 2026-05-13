@@ -128,7 +128,8 @@ class MarketController(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("⚠️ You forgot to mention someone to rob, genius. Try `=rob @user` next time.")
         elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(f"⏳ Slow down, hotshot. You're on cooldown. Try again in {error.retry_after:.1f}s.")
+            minutes, seconds = divmod(error.retry_after, 60)
+            await ctx.send(f"⏳ Slow down, hotshot. You're on cooldown. Try again in {minutes}m {seconds}s.")
 
 
     @commands.command(aliases=['bal'])
