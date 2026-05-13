@@ -85,7 +85,7 @@ class MarketController(commands.Cog):
 
         if target.id == ctx.author.id:
             return await ctx.send("❌ Are you actually retarded? Trying to rob yourself? A random guy with DOWN SYNDROME could have thought of that one. Try again with a real target.")
-        success = random.randint(1, 100) <= 20
+        success = random.randint(1, 100) <= 30
 
         author_bal = await self.model.get_balance(ctx.author.id)
         target_bal = await self.model.get_balance(target.id)
