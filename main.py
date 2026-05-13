@@ -11,7 +11,11 @@ TOKEN = os.getenv('bot_token')
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix='=', intents=intents)
+bot = commands.Bot(
+    command_prefix="=", 
+    intents=intents, 
+    case_insensitive=True  # <--- Add this line
+)
 
 # Added the decorator so the bot actually triggers this function
 @bot.event
