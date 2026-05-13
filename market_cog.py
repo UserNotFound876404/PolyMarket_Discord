@@ -19,7 +19,7 @@ class MarketController(commands.Cog):
             await ctx.send(f"⚠️ You already have an account, {ctx.author.name}! Use `=balance` to check your funds.")
 
     @commands.command()
-    @commands.cooldown(1, 60, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def coinflip(self, ctx, amount: int, choice: str= None):
         if amount is None or choice is None:
             return await ctx.send("Please specify an amount to bet. Example: `=coinflip 50 heads`")
@@ -52,7 +52,7 @@ class MarketController(commands.Cog):
             minutes, seconds = divmod(error.retry_after, 60)
             await ctx.send(
                 f"⌛ **Take a break!**.\n"
-                f"You can play coinflip again in **{int(minutes)}m {int(seconds)}s**."
+                f"You can play coinflip again in **{int(seconds)}s**."
             )
         else:
             raise error
@@ -103,7 +103,7 @@ class MarketController(commands.Cog):
             await self.model.update_balance(ctx.author.id, author_bal + steal_amount)
 
             responses = [
-                f"🥷 Too easy! You snatched **${steal_amount}** from that loser {target.mention}. They're probably crying at their desk right now.",
+                f"EZ! You snatched **${steal_amount}** from that loser {target.mention}. They're probably crying at their desk right now.",
                 f"💸 Thanks for the donation, {target.mention}! Your **${steal_amount}** now belongs to {ctx.author.mention}. Maybe try not being so easy to rob next time?",
                 f"🎯 Clean getaway. {target.mention} just lost **${steal_amount}** and is too slow to realize it. Imagine being that pathetic."
             ]
@@ -129,8 +129,17 @@ class MarketController(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("⚠️ You forgot to mention someone to rob, genius. Try `=rob @user` next time.")
         elif isinstance(error, commands.CommandOnCooldown):
-            minutes, seconds = divmod(error.retry_after, 60)
-            await ctx.send(f"⏳ Slow down, hotshot. You're on cooldown. Try again in {minutes}m {seconds}s.")
+            # 1. Convert total seconds into hours, minutes, and seconds
+            total_seconds = int(error.retry_after)
+    
+            # 2. Extract hours, minutes, and seconds
+            hours, remainder = divmod(total_seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            # 2. Send the toxic response with the full time breakdown
+            await ctx.send(
+                f"⏳ Chill out, you greedy prick. You're on cooldown for another "
+                f"**{hours}h {minutes}m {seconds}s**. Go do something productive for once."
+            )
 
 
     @commands.command(aliases=['bal'])
