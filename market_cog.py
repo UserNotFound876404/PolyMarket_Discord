@@ -81,7 +81,7 @@ class MarketController(commands.Cog):
     async def startpool(self, ctx, amount: int,*, question: str):
 
         for bets in self.bet_data.values():
-            if bets and ctx.author.id in bets:
+            if bets == ctx.author.id:
                 return await ctx.send("❌ You already have an active bet! Please stop it before starting a new one.") 
 
         # 1. Create the UI
