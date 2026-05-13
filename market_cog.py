@@ -96,7 +96,7 @@ class MarketController(commands.Cog):
             # Penalty for the audacity: Triple the usual fine
 
             penalty = random.randint(300, 600)
-            await self.model.update_balance(ctx.author.id, author_bal - penalty)
+            await self.model.update_balance(ctx.author.id, - penalty)
             
             return await ctx.send(
                 f"🛡️ **FATAL ERROR FOR YOUR BRAIN.**\n"
@@ -114,8 +114,8 @@ class MarketController(commands.Cog):
             
             # Update database: Subtract from target, Add to author
             # Assuming your model has a method to update balance
-            await self.model.update_balance(target.id, target_bal - steal_amount)
-            await self.model.update_balance(ctx.author.id, author_bal + steal_amount)
+            await self.model.update_balance(target.id, - steal_amount)
+            await self.model.update_balance(ctx.author.id, steal_amount)
 
             responses = [
                 f"EZ! You snatched **${steal_amount}** from that loser {target.mention}. They're probably crying at their desk right now.",
@@ -127,7 +127,7 @@ class MarketController(commands.Cog):
             
             penalty = random.randint(75, 150)
 
-            await self.model.update_balance(ctx.author.id, author_bal - penalty)
+            await self.model.update_balance(ctx.author.id, - penalty)
 
             responses = [
                 f"🤡 LOL! **{ctx.author.mention}** just got caught like a complete amateur and had to pay a **${penalty}** fine. Embarrassing.",
