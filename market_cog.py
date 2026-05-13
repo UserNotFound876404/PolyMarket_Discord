@@ -26,7 +26,7 @@ class MarketController(commands.Cog):
         if amount <= 0:
             return await ctx.send("You can't flip air! Bet at least $1.")
         if choice and choice.lower() not in ['heads', 'tails']:
-            return await ctx.send("Choose `heads` or `tails` (or leave it blank for random).")
+            return await ctx.send("Choose `heads` or `tails`")
         user_bal = await self.model.get_balance(ctx.author.id)
         if user_bal < amount:
             return await ctx.send("❌ You don't have enough coins for this flip.")
@@ -85,13 +85,27 @@ class MarketController(commands.Cog):
 
         if target.id == ctx.author.id:
             return await ctx.send("❌ Are you actually retarded? Trying to rob yourself? A random guy with DOWN SYNDROME could have thought of that one. Try again with a real target.")
+        
         success = random.randint(1, 100) <= 30
 
         author_bal = await self.model.get_balance(ctx.author.id)
         target_bal = await self.model.get_balance(target.id)
 
+        if target.id == self.bot.user.id:
+            # Penalty for the audacity: Triple the usual fine
+
+            penalty = random.randint(300, 600)
+            await self.model.update_balance(ctx.author.id, author_bal - penalty)
+            
+            return await ctx.send(
+                f"🛡️ **FATAL ERROR FOR YOUR BRAIN.**\n"
+                f"You really tried to rob **ME**? I am a literal machine. "
+                f"Laughed at your bank account, and deducted **${penalty}** as a 'stupidity tax'. "
+                f"Don't ever touch me again, you peasant."
+            )
+
         if target_bal < 100:
-            return await ctx.send(f"❌ **{target.name}** is too broke that they cant even pay for living.")
+            return await ctx.send(f"**{target.name}** is too broke that they cant even pay for living.")
 
         if success:
             # Calculate a random amount to steal (e.g., 10% to 30% of their balance)
