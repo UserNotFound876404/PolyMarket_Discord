@@ -67,14 +67,13 @@ class MarketController(commands.Cog):
             raise error
         
     @commands.command(aliases=['steal'])
-    @commands.cooldown(1, 10800, commands.BucketType.user)
+    #@commands.cooldown(1, 10800, commands.BucketType.user)
     async def rob(self, ctx, target : discord.Member ):
 
         if target.id == ctx.author.id:
             return await ctx.send("❌ Are you actually retarded? Trying to rob yourself? A random guy with DOWN SYNDROME could have thought of that one. Try again with a real target.")
         success = random.randint(1, 100) <= 20
 
-        author_bal = await self.model.get_balance(ctx.author.id)
         target_bal = await self.model.get_balance(target.id)
 
         if target_bal < 100:
@@ -96,6 +95,7 @@ class MarketController(commands.Cog):
             ]
             await ctx.send(random.choice(responses))
         else:
+            
             penalty = random.randint(75, 150)
 
             await self.model.add_balance(ctx.author.id, -penalty)
@@ -109,10 +109,11 @@ class MarketController(commands.Cog):
 
     @rob.error
     async def rob_error(self, ctx, error):
+        print(f"Command Error: {error}")
         if isinstance(error, commands.MemberNotFound):
             await ctx.send("❌ I can't find that user. Are you hallucinating? Stop wasting my time and mention someone who actually exists.")
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("⚠️ You forgot to mention someone to rob, genius. Try `!rob @user` next time.")
+            await ctx.send("⚠️ You forgot to mention someone to rob, genius. Try `=rob @user` next time.")
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(f"⏳ Slow down, hotshot. You're on cooldown. Try again in {error.retry_after:.1f}s.")
 
