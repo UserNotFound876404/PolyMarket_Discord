@@ -30,7 +30,7 @@ async def load_extensions():
 async def ping(ctx):
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms')
 
-@bot.command(aliases=['mmm','Mu','MM'])
+@bot.command(aliases=['mmm','Mu','MM','MU'])
 @commands.has_permissions(moderate_members=True) # Only admins can use this!
 async def mu(ctx, minutes: int = 3):
     member = ctx.author
