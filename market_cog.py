@@ -87,6 +87,7 @@ class MarketController(commands.Cog):
             return await ctx.send("❌ Are you actually retarded? Trying to rob yourself? A random guy with DOWN SYNDROME could have thought of that one. Try again with a real target.")
         success = random.randint(1, 100) <= 20
 
+        author_bal = await self.model.get_balance(ctx.author.id)
         target_bal = await self.model.get_balance(target.id)
 
         if target_bal < 100:
@@ -98,9 +99,9 @@ class MarketController(commands.Cog):
             
             # Update database: Subtract from target, Add to author
             # Assuming your model has a method to update balance
-            await self.model.update_balance(target.id, -steal_amount)
-            await self.model.update_balance(ctx.author.id, steal_amount)
-            
+            await self.model.update_balance(target.id, target_bal - steal_amount)
+            await self.model.update_balance(ctx.author.id, author_bal + steal_amount)
+
             responses = [
                 f"🥷 Too easy! You snatched **${steal_amount}** from that loser {target.mention}. They're probably crying at their desk right now.",
                 f"💸 Thanks for the donation, {target.mention}! Your **${steal_amount}** now belongs to {ctx.author.mention}. Maybe try not being so easy to rob next time?",
@@ -111,7 +112,7 @@ class MarketController(commands.Cog):
             
             penalty = random.randint(75, 150)
 
-            await self.model.update_balance(ctx.author.id, -penalty)
+            await self.model.update_balance(ctx.author.id, author_bal - penalty)
 
             responses = [
                 f"🤡 LOL! **{ctx.author.mention}** just got caught like a complete amateur and had to pay a **${penalty}** fine. Embarrassing.",
