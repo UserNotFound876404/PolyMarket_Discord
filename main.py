@@ -30,7 +30,7 @@ async def load_extensions():
 async def ping(ctx):
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms')
 
-@bot.command()
+@bot.command(aliases=['register', 'start'])
 @commands.has_permissions(moderate_members=True) # Only admins can use this!
 async def mu(ctx, member: discord.Member, minutes: int = 3):
     
@@ -46,28 +46,13 @@ async def mu(ctx, member: discord.Member, minutes: int = 3):
     except Exception as e:
         await ctx.send(f"❌ Failed to mute user. Do I have 'Moderate Members' permissions? Error: {e}")
 
-@bot.command()
-@commands.has_permissions(moderate_members=True) # Only admins can use this!
-async def mmm(ctx, minutes: int = 3):
-    member = ctx.author
-
-    # 1. Calculate the duration
-    duration = datetime.timedelta(minutes=minutes)
-    
-    try:
-        # 2. Apply the timeout
-        await member.timeout(duration, reason=f"MMM? MMM? WHOPS {ctx.author}!")
-        
-        await ctx.send(f"🤐 **{member.display_name}** has been muted for {minutes} minutes. They cannot type or join VC. Womp Womp NIGGA")
-        
-    except Exception as e:
-        await ctx.send(f"❌ Failed to mute user. Do I have 'Moderate Members' permissions? Error: {e}")
 
 # async def main():
 #     async with bot:
 #         await load_extensions()
 #         # Pass the VARIABLE 'TOKEN', not the STRING 'bot_token'
 #         await bot.start(TOKEN)
+
 
 async def setup_hook():
     await bot.load_extension('market_cog')
