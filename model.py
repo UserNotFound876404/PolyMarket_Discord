@@ -38,3 +38,11 @@ class MarketModel:
             {"$inc": {"balance": amount}},
             upsert=True
         )
+
+    async def set_balance(self, user_id, amount):
+        """Sets the balance to a specific amount, regardless of current funds"""
+        await self.users.update_one(
+            {"_id": str(user_id)},
+            {"$set": {"balance": amount}},
+            upsert=True
+        )

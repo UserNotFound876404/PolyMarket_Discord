@@ -84,24 +84,26 @@ class MarketController(commands.Cog):
     @commands.cooldown(1, 10800, commands.BucketType.user)
     async def rob(self, ctx, target : discord.Member ):
 
-        if target.id == ctx.author.id:
-            return await ctx.send("❌ Are you actually retarded? Trying to rob yourself? A random guy with DOWN SYNDROME could have thought of that one. Try again with a real target.")
-        
+       
         success = random.randint(1, 100) <= 30
 
         author_bal = await self.model.get_balance(ctx.author.id)
         target_bal = await self.model.get_balance(target.id)
 
+        if target.id == ctx.author.id:
+            await self.model.update_balance(ctx.author.id, -500)
+            return await ctx.send("❌ Are you actually retarded? Trying to rob yourself? A random guy with DOWN SYNDROME could have thought of that one. Try again with a real target.")
+
         if target.id == self.bot.user.id:
             # Penalty for the audacity: Triple the usual fine
 
             penalty = random.randint(500, 1000)
-            await self.model.update_balance(ctx.author.id, - penalty)
+            await self.model.set_balance(ctx.author.id, 500)
             
             return await ctx.send(
                 f"🛡️ **FATAL ERROR FOR YOUR BRAIN.**\n"
                 f"You really tried to rob **ME**? I am a literal machine. "
-                f"Laughed at your bank account, and deducted **${penalty}** as a 'stupidity tax'. "
+                f"Laughed at your bank account, reset your bank account as a 'stupidity tax'. "
                 f"Don't ever touch me again, you peasant."
             )
 
