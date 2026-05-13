@@ -32,9 +32,8 @@ async def ping(ctx):
 
 @bot.command(aliases=['mmm'])
 @commands.has_permissions(moderate_members=True) # Only admins can use this!
-async def mu(ctx, member: discord.Member, minutes: int = 3):
-    
-    # 1. Calculate the duration
+async def mu(ctx, minutes: int = 3):
+    member = ctx.author
     duration = datetime.timedelta(minutes=minutes)
     
     try:
