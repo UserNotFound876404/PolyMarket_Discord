@@ -19,6 +19,7 @@ class MarketController(commands.Cog):
             await ctx.send(f"⚠️ You already have an account, {ctx.author.name}! Use `=balance` to check your funds.")
 
     @commands.command()
+    @commands.cooldown(1, 60, commands.BucketType.user)
     async def coinflip(self, ctx, amount: int, choice: str= None):
         if amount is None or choice is None:
             return await ctx.send("Please specify an amount to bet. Example: `=coinflip 50 heads`")
@@ -43,6 +44,18 @@ class MarketController(commands.Cog):
             await ctx.send(f"📈 It's **{actual_result.upper()}**! You won **${amount}**!")
         else:
             await ctx.send(f"💀 It's **{actual_result.upper()}**... You lost **${amount}**.")
+    @coinflip.error
+    async def coinflip_error(self, ctx, error):
+        # Check if the error is specifically a Cooldown error
+        if isinstance(error, commands.CommandOnCooldown):
+            # Calculate minutes and seconds remaining
+            minutes, seconds = divmod(error.retry_after, 60)
+            await ctx.send(
+                f"⌛ **Take a break!**.\n"
+                f"You can play coinflip again in **{int(minutes)}m {int(seconds)}s**."
+            )
+        else:
+            raise error
 
     @commands.command()
     @commands.cooldown(1, 300, commands.BucketType.user) # 1 use every 300 seconds (5 mins) per user
@@ -67,7 +80,7 @@ class MarketController(commands.Cog):
             raise error
         
     @commands.command(aliases=['steal'])
-    #@commands.cooldown(1, 10800, commands.BucketType.user)
+    @commands.cooldown(1, 10800, commands.BucketType.user)
     async def rob(self, ctx, target : discord.Member ):
 
         if target.id == ctx.author.id:
