@@ -44,7 +44,6 @@ class MarketController(commands.Cog):
         else:
             await ctx.send(f"💀 It's **{actual_result.upper()}**... You lost **${amount}**.")
 
-    # Add this inside your MarketController class in market_cog.py
     @commands.command()
     @commands.cooldown(1, 300, commands.BucketType.user) # 1 use every 300 seconds (5 mins) per user
     async def work(self, ctx):
@@ -59,15 +58,64 @@ class MarketController(commands.Cog):
             # Calculate minutes and seconds remaining
             minutes, seconds = divmod(error.retry_after, 60)
             
-            # Send a friendly message to the user
             await ctx.send(
                 f"⌛ **Take a break!** You are exhausted from the farm.\n"
                 f"You can work again in **{int(minutes)}m {int(seconds)}s**."
             )
         else:
-            # If it's a different error (like a database issue), 
-            # this makes sure it still shows up in your console.
+
             raise error
+        
+    @commands.command(aliases=['steal'])
+    @commands.cooldown(1, 10800, commands.BucketType.user)
+    async def rob(self, ctx, target : discord.Member ):
+
+        if target.id == ctx.author.id:
+            return await ctx.send("❌ Are you actually retarded? Trying to rob yourself? A random guy with DOWN SYNDROME could have thought of that one. Try again with a real target.")
+        success = random.randint(1, 100) <= 20
+
+        author_bal = await self.model.get_balance(ctx.author.id)
+        target_bal = await self.model.get_balance(target.id)
+
+        if target_bal < 100:
+            return await ctx.send(f"❌ **{target.name}** is too broke that they cant even pay for living.")
+
+        if success:
+            # Calculate a random amount to steal (e.g., 10% to 30% of their balance)
+            steal_amount = random.randint(int(target_bal * 0.05), int(target_bal * 0.15))
+            
+            # Update database: Subtract from target, Add to author
+            # Assuming your model has a method to update balance (e.g., add_balance)
+            await self.model.add_balance(target.id, -steal_amount)
+            await self.model.add_balance(ctx.author.id, steal_amount)
+            
+            responses = [
+                f"🥷 Too easy! You snatched **${steal_amount}** from that loser {target.mention}. They're probably crying at their desk right now.",
+                f"💸 Thanks for the donation, {target.mention}! Your **${steal_amount}** now belongs to {ctx.author.mention}. Maybe try not being so easy to rob next time?",
+                f"🎯 Clean getaway. {target.mention} just lost **${steal_amount}** and is too slow to realize it. Imagine being that pathetic."
+            ]
+            await ctx.send(random.choice(responses))
+        else:
+            penalty = random.randint(75, 150)
+
+            await self.model.add_balance(ctx.author.id, -penalty)
+
+            responses = [
+                f"🤡 LOL! **{ctx.author.mention}** just got caught like a complete amateur and had to pay a **${penalty}** fine. Embarrassing.",
+                f"👮 Busted! **{target.mention}** called the cops and you got slapped with a **${penalty}** bill. You can't even commit a crime right, can you?",
+                f"🤦 You call that a robbery? **{target.mention}** laughed in your face and you dropped **${penalty}** while running away. Pure comedy."
+            ]
+            await ctx.send(random.choice(responses))
+
+    @rob.error
+    async def rob_error(self, ctx, error):
+        if isinstance(error, commands.MemberNotFound):
+            await ctx.send("❌ I can't find that user. Are you hallucinating? Stop wasting my time and mention someone who actually exists.")
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("⚠️ You forgot to mention someone to rob, genius. Try `!rob @user` next time.")
+        elif isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(f"⏳ Slow down, hotshot. You're on cooldown. Try again in {error.retry_after:.1f}s.")
+
 
     @commands.command(aliases=['bal'])
     async def balance(self, ctx):
@@ -79,6 +127,9 @@ class MarketController(commands.Cog):
 
     @commands.command()
     async def startpool(self, ctx, amount: int,*, question: str):
+
+        if amount is None or question is None:
+            return await ctx.send("Usage: `=startpool <amount> <question>`\nExample: `=startpool 50 Will it rain tomorrow?`")
 
         for bets in self.bet_data.values():
             if bets == ctx.author.id:
@@ -141,8 +192,6 @@ class MarketController(commands.Cog):
         # 4. Clear the active bet so a new one can start
         del self.active_bet_id
         self.bet_data = None
-
-
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
