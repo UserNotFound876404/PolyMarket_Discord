@@ -97,7 +97,7 @@ class MarketController(commands.Cog):
         if target.id == self.bot.user.id:
             # Penalty for the audacity: Triple the usual fine
 
-            penalty = random.randint(500, 1000)
+            #penalty = random.randint(500, 1000)
             await self.model.set_balance(ctx.author.id, 500)
             
             return await ctx.send(
