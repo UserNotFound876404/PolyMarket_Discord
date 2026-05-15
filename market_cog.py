@@ -85,7 +85,7 @@ class MarketController(commands.Cog):
     async def rob(self, ctx, target : discord.Member ):
 
        
-        success = random.randint(1, 100) <= 30
+        success = random.randint(1, 100) <= 40
 
         author_bal = await self.model.get_balance(ctx.author.id)
         target_bal = await self.model.get_balance(target.id)
@@ -98,7 +98,7 @@ class MarketController(commands.Cog):
             # Penalty for the audacity: Triple the usual fine
 
             #penalty = random.randint(500, 1000)
-            await self.model.set_balance(ctx.author.id, 500)
+            await self.model.set_balance(ctx.author.id, 0)
             
             return await ctx.send(
                 f"🛡️ **FATAL ERROR FOR YOUR BRAIN.**\n"
